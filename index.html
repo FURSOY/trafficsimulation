@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>World Editor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>World Editor</h1>
+
+    <div id="buttonContainer">
+        <button onclick="dispose()">🗑️</button>
+        <button onclick="save()">Save</button>
+        <label for="fileInput" class="button">Load</label>
+        <input type="file" id="fileInput" accept=".json" onchange="load(event)" style="display: none;">
+    </div>
+
+    <div id="canvasAndEditorControls"
+        style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
+        <canvas id="myCanvas"></canvas>
+        <div id="EditorButtonContainer" style="margin-left: 10px;">
+            <button class="EditorButton" id="gridToggleButton" onclick="toggleGrid()">Grid</button>
+            <button class="EditorButton" onclick="toggleGrid()">Boş</button>
+            <button class="EditorButton" onclick="toggleGrid()">Boş1</button>
+            <button class="EditorButton" onclick="toggleGrid()">Boş2</button>
+        </div>
+    </div>
+
+    <script src="js/primitives/point.js"></script>
+    <script src="js/primitives/segment.js"></script>
+    <script src="js/math/utils.js"></script>
+    <script src="js/math/graph.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/viewport.js"></script>
+    <script src="js/editors/graphEditor.js"></script>
+    <script>
+        myCanvas.width = 600;
+        myCanvas.height = 600;
+
+        const ctx = myCanvas.getContext("2d");
+
+        let graph = new Graph();
+        const world = new World(graph);
+
+        const viewport = new Viewport(myCanvas);
+        let graphEditor = new GraphEditor(viewport, graph);
+
+        animate();
+
+        function animate() {
+            viewport.reset();
+            world.draw(ctx);
+            graphEditor.display(ctx);
+            requestAnimationFrame(animate);
+        }
+
+        function dispose() {
+            graphEditor.dispose();
+        }
+
+        function toggleGrid() {
+            const gridEnabled = graphEditor.toggleGrid();
+            const gridButton = document.getElementById("gridToggleButton");
+            if (gridEnabled) {
+                gridButton.classList.add("active");
+            } else {
+                gridButton.classList.remove("active");
+            }
+        }
+
+        function save() {
+            const data = JSON.stringify(graph, null, 2);
+            const blob = new Blob([data], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "graph.json";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function load(evt) {
+            const file = evt.target.files[0];
+            if (!file) {
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const text = e.target.result;
+                const data = JSON.parse(text);
+                graph = Graph.load(data);
+                world.graph = graph;
+                graphEditor = new GraphEditor(viewport, graph);
+            };
+            reader.readAsText(file);
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+body {
+    margin: 0;
+    background-color: lightgray;
+    overflow: hidden;
+    font-family: sans-serif;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+#myCanvas {
+    background-color: #333;
+}
+
+#buttonContainer {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+}
+
+#EditorButtonContainer {
+    display: flex;
+    flex-direction: column;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+button,
+.button {
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 5px;
+    margin: 5px;
+    display: inline-block;
+}
+
+button.active {
+    background-color: #333;
+    color: #fff;
+    border-color: #333;
+}
